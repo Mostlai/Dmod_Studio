@@ -119,9 +119,11 @@
         .vsc-suggest-label { font-family: var(--font-code); font-weight: bold; color: var(--sh-cmd); font-size: 13px; }
         .vsc-suggest-desc { font-size: 12px; color: #999; }
 
-        /* --- Mobile Mobile Mobile --- */
-        .mobile-header-btn { display: none; } /* Default hidden */
+        /* --- Desktop Defaults for Mobile Elements (Fix: Hide by default) --- */
+        .mobile-toolbar { display: none; }
+        .mobile-list-header { display: none; }
 
+        /* --- Mobile Adaptations --- */
         @media (max-width: 768px) {
             body { flex-direction: column; position: relative; }
             
@@ -132,7 +134,7 @@
             }
             .activity-bar > div { display: flex; flex: 1; justify-content: space-around; }
             .activity-bottom { display: flex; flex-direction: row; width: 100%; justify-content: space-around; padding: 0 10px; }
-            .activity-top { display: none; } /* Hide file/stats in bottom bar, move to header or manage differently */
+            .activity-top { display: none; }
             
             /* View Containers - Stacked */
             .sidebar, .list-panel, .editor-container { 
@@ -149,15 +151,22 @@
 
             /* List Panel Tweaks */
             .entry-item { padding: 15px; }
-            .entry-actions { opacity: 1; } /* Always visible actions on mobile */
+            .entry-actions { opacity: 1; }
             .btn-icon { padding: 8px; font-size: 16px; }
+
+            /* Mobile Header visible only on mobile */
+            .mobile-list-header {
+                display: flex;
+                justify-content: space-between; 
+                margin-bottom: 5px;
+            }
 
             /* Editor Tweaks */
             .form-view { padding: 10px; padding-bottom: 80px; }
             .preview-view { display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 50; }
             .preview-view.active { display: flex; }
 
-            /* --- The Critical Request: Mobile Property Row --- */
+            /* Mobile Property Row */
             .form-row {
                 display: flex;
                 flex-wrap: wrap;
@@ -168,7 +177,6 @@
                 border: 1px solid #333;
             }
             
-            /* Label at top left */
             .lbl {
                 width: auto;
                 text-align: left;
@@ -179,28 +187,18 @@
                 flex-basis: 70%;
             }
 
-            /* Actions at top right */
             .row-actions {
                 position: absolute;
                 top: 8px;
                 right: 8px;
-                opacity: 1 !important; /* Always visible */
+                opacity: 1 !important;
                 padding: 0;
             }
-            .btn-action {
-                font-size: 16px;
-                padding: 8px;
-                color: #aaa;
-            }
+            .btn-action { font-size: 16px; padding: 8px; color: #aaa; }
             .btn-action.add { color: #4ade80; }
             .btn-action.del { color: #ef4444; }
 
-            /* Input container takes full width below */
-            .form-row > div:nth-child(2) {
-                width: 100%;
-                margin-top: 5px;
-            }
-            
+            .form-row > div:nth-child(2) { width: 100%; margin-top: 5px; }
             .auto-textarea { font-size: 14px; padding: 12px; background: #111; }
 
             /* Mobile Header Toolbar in Editor */
@@ -211,8 +209,7 @@
             }
             .mobile-back-btn { color: #fff; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 5px; }
             
-            /* Status Bar */
-            .status-bar { display: none; } /* Hide desktop status bar */
+            .status-bar { display: none; }
         }
 
         /* --- Tour Guide Styles --- */
@@ -275,7 +272,8 @@
 
     <div class="list-panel" id="view-list">
         <div class="list-header">
-            <div style="display:flex; justify-content:space-between; margin-bottom:5px;">
+            <!-- Mobile Only Header Navigation -->
+            <div class="mobile-list-header">
                 <span style="font-weight:bold; color:#fff" id="listTitle">列表</span>
                 <i class="fa-solid fa-arrow-left" style="padding:5px; cursor:pointer" onclick="switchView('sidebar')"> 返回分类</i>
             </div>
@@ -319,7 +317,7 @@
             <div id="statusMsg">就绪</div>
             <div style="display:flex; gap:15px;">
                 <span id="objCount">总计: 0</span>
-                <span>Dominions Mod Studio v1.6</span>
+                <span>Dominions Mod Studio v1.6.1</span>
             </div>
         </div>
     </div>
@@ -327,17 +325,11 @@
 <script>
 // --- Mobile Logic ---
 function switchView(viewName) {
-    // Hide all
     document.getElementById('view-sidebar').classList.remove('view-active');
     document.getElementById('view-list').classList.remove('view-active');
     document.getElementById('view-editor').classList.remove('view-active');
-    
-    // Show target
     document.getElementById('view-' + viewName).classList.add('view-active');
-    
-    // Update bottom icons
     document.querySelectorAll('.activity-bottom .activity-icon').forEach(el => el.classList.remove('active'));
-    // Simple logic to highlight based on order, roughly
     if(viewName==='sidebar') document.querySelector('.activity-bottom .activity-icon:nth-child(1)').classList.add('active');
     if(viewName==='list') document.querySelector('.activity-bottom .activity-icon:nth-child(2)').classList.add('active');
     if(viewName==='editor') document.querySelector('.activity-bottom .activity-icon:nth-child(3)').classList.add('active');
@@ -348,9 +340,8 @@ function togglePreview() {
     p.classList.toggle('active');
 }
 
-// Check window width to apply mobile initial state
 if (window.innerWidth <= 768) {
-    switchView('sidebar'); // Start at sidebar on mobile
+    switchView('sidebar'); 
 }
 
 // --- State & Config ---
@@ -403,19 +394,18 @@ class TourGuide {
         const tooltip = document.getElementById('tour-tooltip');
         
         document.querySelectorAll('.tour-highlight').forEach(e => e.classList.remove('tour-highlight'));
-        if(el) el.classList.add('tour-highlight'); // check if element exists (mobile might hide some)
+        if(el) el.classList.add('tour-highlight'); 
         
         document.getElementById('tour-title').innerText = step.title;
         document.getElementById('tour-desc').innerText = step.desc;
         document.getElementById('tour-count').innerText = `${this.currentStep + 1} / ${this.steps.length}`;
         
-        // Simple centering logic for mobile robustness
         const rect = el ? el.getBoundingClientRect() : { top: 100, left: 100, bottom: 200, right: 200 };
         let top = rect.bottom + 10;
         let left = 20;
         
         if (window.innerWidth <= 768) {
-            top = 100; left = (window.innerWidth - 280) / 2; // Center on mobile
+            top = 100; left = (window.innerWidth - 280) / 2; 
         } else {
              if (left + 300 > window.innerWidth) left = rect.left - 300;
              if (top + 200 > window.innerHeight) top = window.innerHeight - 200;
@@ -452,7 +442,7 @@ const tour = new TourGuide({
 });
 
 function showAbout() {
-    const content = `<div style="text-align:center; padding:20px;"><i class="fa-solid fa-rocket" style="font-size:40px; color:#007acc; margin-bottom:15px;"></i><h3 style="color:#fff; margin-bottom:10px;">Dominions Mod Studio</h3><p style="color:#aaa; line-height:1.6;">v1.6<br>By: Mr.Pldada(2096358571@qq.com)</p><div style="margin: 15px 0; background: #fff; padding: 5px; display: inline-block; border-radius: 4px;"><img src="sk.jpg" alt="Donate" style="width: 300px; height: 300px; display: block;"></div><p style="color:#aaa; font-size:12px;">支持开发者</p></div>`;
+    const content = `<div style="text-align:center; padding:20px;"><i class="fa-solid fa-rocket" style="font-size:40px; color:#007acc; margin-bottom:15px;"></i><h3 style="color:#fff; margin-bottom:10px;">Dominions Mod Studio</h3><p style="color:#aaa; line-height:1.6;">v1.6.1<br>By: Mr.Pldada(2096358571@qq.com)</p><div style="margin: 15px 0; background: #fff; padding: 5px; display: inline-block; border-radius: 4px;"><img src="sk.jpg" alt="Donate" style="width: 300px; height: 300px; display: block;"></div><p style="color:#aaa; font-size:12px;">支持开发者</p></div>`;
     openModal("关于", content, `<button class="btn-secondary" onclick="closeModal()">Close</button>`);
 }
 function showDonate() {
@@ -542,7 +532,7 @@ function renderTree() {
         div.innerHTML = `<span class="tree-icon"><i class="fa-solid ${cat.icon}"></i></span><span>${cat.label}</span>`;
         div.onclick = () => { 
             currentSelection.catId = cat.id; renderTree(); renderList(); 
-            if(window.innerWidth <= 768) switchView('list'); // Auto switch on mobile
+            if(window.innerWidth <= 768) switchView('list'); 
         };
         tree.appendChild(div);
     });
