@@ -164,6 +164,60 @@
         .tour-highlight { position: relative; z-index: 40001 !important; box-shadow: 0 0 0 9999px rgba(0,0,0,0.7); pointer-events: none; }
         #tour-title { margin-top:0; color:var(--accent-color); font-size:14px; font-weight:bold; }
         #tour-desc { color:#cccccc; font-size:13px; line-height:1.5; margin:10px 0; }
+@media (min-width: 769px) and (max-width: 1200px) {
+    :root {
+        /* 稍微减小 UI 字体以节省空间 */
+        font-size: 12px;
+    }
+
+    /* 1. 缩小侧边栏和列表宽度 */
+    .sidebar { width: 200px; }
+    .list-panel { width: 240px; }
+
+    /* 2. 让预览面板像移动端一样可以弹出，而不是挤占空间 */
+    .preview-view {
+        position: absolute;
+        right: 0;
+        top: 0;
+        bottom: 0;
+        width: 400px;
+        z-index: 150;
+        display: none; /* 默认隐藏 */
+        box-shadow: -5px 0 20px rgba(0,0,0,0.5);
+        border-left: 1px solid var(--border-color);
+    }
+    
+    .preview-view.active {
+        display: flex;
+    }
+
+    .mobile-toolbar {
+        display: flex !important; 
+        height: 35px;
+        background: var(--bg-sidebar);
+        border-bottom: 1px solid #111;
+    }
+
+    .mobile-back-btn {
+        display: none !important;
+    }
+
+    .form-row {
+        grid-template-columns: 120px 1fr 60px; /* 缩短标签宽度 */
+        gap: 8px;
+    }
+
+    .form-view {
+        padding: 15px;
+    }
+}
+.form-row {
+    min-width: 0; /* 防止 grid 容器溢出 */
+}
+
+.auto-textarea {
+    min-width: 0;
+}
     </style>
 </head>
 <body onclick="hideSuggestions()">
@@ -240,9 +294,9 @@
     <div class="editor-container" id="view-editor">
         <div class="mobile-toolbar" id="mobileToolbar">
             <div class="mobile-back-btn" onclick="switchView('list')"><i class="fa-solid fa-chevron-left"></i> <span data-i18n="BTN_BACK_LIST">列表</span></div>
-            <div style="display:flex; gap:15px;">
+            <div style="    padding: 10px;display: flex; gap: 15px;align-items: center;;">
                 <i class="fa-solid fa-eye" onclick="togglePreview()" style="color:#ccc; cursor:pointer"></i>
-                <i class="fa-solid fa-save" style="color:#007acc; cursor:pointer"></i>
+                <!--  <i class="fa-solid fa-save" style="color:#007acc; cursor:pointer"></i> -->
             </div>
         </div>
 
@@ -270,7 +324,7 @@
             <div id="statusMsg" data-i18n="MSG_READY">就绪</div>
             <div style="display:flex; gap:15px;">
                 <span id="objCount">Total: 0</span>
-                <span>Dominions Mod Studio v1.6.2</span>
+                <span>Dominions Mod Studio v1.6.3</span>
             </div>
         </div>
     </div>
@@ -488,7 +542,7 @@ class TourGuide {
 const tour = new TourGuide();
 
 function showAbout() {
-    const content = `<div style="text-align:center; padding:20px;"><i class="fa-solid fa-rocket" style="font-size:40px; color:#007acc; margin-bottom:15px;"></i><h3 style="color:#fff; margin-bottom:10px;">Dominions Mod Studio</h3><p style="color:#aaa; line-height:1.6;">v1.6.2<br>By: Mr.Pldada(2096358571@qq.com)</p><div style="margin: 15px 0; background: #fff; padding: 5px; display: inline-block; border-radius: 4px;"><img src="sk.jpg" alt="Donate" style="width: 300px; height: 300px; display: block;"></div><div style="margin-top:10px;"><a href="https://ko-fi.com/pldada" target="_blank" class="btn-kofi" style="width:auto; display:inline-flex; padding:6px 12px;"><i class="fa-solid fa-mug-hot"></i> Support on Ko-fi</a></div></div>`;
+    const content = `<div style="text-align:center; padding:20px;"><i class="fa-solid fa-rocket" style="font-size:40px; color:#007acc; margin-bottom:15px;"></i><h3 style="color:#fff; margin-bottom:10px;">Dominions Mod Studio</h3><p style="color:#aaa; line-height:1.6;">v1.6.3<br>By: Mr.Pldada(2096358571@qq.com)</p><div style="margin: 15px 0; background: #fff; padding: 5px; display: inline-block; border-radius: 4px;"><img src="sk.jpg" alt="Donate" style="width: 300px; height: 300px; display: block;"></div><div style="margin-top:10px;"><a href="https://ko-fi.com/pldada" target="_blank" class="btn-kofi" style="width:auto; display:inline-flex; padding:6px 12px;"><i class="fa-solid fa-mug-hot"></i> Support on Ko-fi</a></div></div>`;
     openModal(t('DLG_ABOUT'), content, `<button class="btn-secondary" onclick="closeModal()">${t('BTN_CLOSE')}</button>`);
 }
 function showDonate() {
