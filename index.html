@@ -293,7 +293,7 @@
             <div id="statusMsg" data-i18n="MSG_READY">就绪</div>
             <div style="display:flex; gap:15px;">
                 <span id="objCount">Total: 0</span>
-                <span>Dominions Mod Studio v1.6.3</span>
+                <span>Dominions Mod Studio v1.6.4</span>
             </div>
         </div>
     </div>
@@ -508,7 +508,7 @@ async function loadCmdDocs() {
 class TourGuide {
     constructor() {
         this.currentStep = 0;
-        this.storageKey = 'tour-finished-v1.6.3'; 
+        this.storageKey = 'tour-finished-v1.6.4'; 
         this.steps = [
             { target: 'step-1', t_title: 'TOUR_1_T', t_desc: 'TOUR_1_D' },
             { target: 'step-2', t_title: 'TOUR_2_T', t_desc: 'TOUR_2_D' },
@@ -586,7 +586,7 @@ class TourGuide {
 const tour = new TourGuide();
 
 function showAbout() {
-    const content = `<div style="text-align:center; padding:20px;"><i class="fa-solid fa-rocket" style="font-size:40px; color:#007acc; margin-bottom:15px;"></i><h3 style="color:#fff; margin-bottom:10px;">Dominions Mod Studio</h3><p style="color:#aaa; line-height:1.6;">v1.6.3<br>By: Mr.Pldada(2096358571@qq.com)</p><div style="margin: 15px 0; background: #fff; padding: 5px; display: inline-block; border-radius: 4px;"><img src="sk.jpg" alt="Donate" style="width: 300px; height: 300px; display: block;"></div><div style="margin-top:10px;"><a href="https://ko-fi.com/pldada" target="_blank" class="btn-kofi" style="width:auto; display:inline-flex; padding:6px 12px;"><i class="fa-solid fa-mug-hot"></i> Support on Ko-fi</a></div></div>`;
+    const content = `<div style="text-align:center; padding:20px;"><i class="fa-solid fa-rocket" style="font-size:40px; color:#007acc; margin-bottom:15px;"></i><h3 style="color:#fff; margin-bottom:10px;">Dominions Mod Studio</h3><p style="color:#aaa; line-height:1.6;">v1.6.4<br>By: Mr.Pldada(2096358571@qq.com)</p><div style="margin: 15px 0; background: #fff; padding: 5px; display: inline-block; border-radius: 4px;"><img src="sk.jpg" alt="Donate" style="width: 300px; height: 300px; display: block;"></div><div style="margin-top:10px;"><a href="https://ko-fi.com/pldada" target="_blank" class="btn-kofi" style="width:auto; display:inline-flex; padding:6px 12px;"><i class="fa-solid fa-mug-hot"></i> Support on Ko-fi</a></div></div>`;
     openModal(t('DLG_ABOUT'), content, `<button class="btn-secondary" onclick="closeModal()">${t('BTN_CLOSE')}</button>`);
 }
 function showDonate() {
