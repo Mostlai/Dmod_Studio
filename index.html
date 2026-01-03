@@ -81,12 +81,22 @@
         .form-row:hover { background: #2a2d2e; }
         .lbl { text-align: right; color: var(--sh-key); font-family: var(--font-code); padding-top: 6px; font-weight: 500; font-size: 12px; background: none; border: none; width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         
-        .auto-textarea { 
-            background: var(--bg-input); border: 1px solid transparent; color: var(--text-main); 
-            font-family: var(--font-code); padding: 8px 10px; width: 100%; resize: none; overflow: hidden;
-            line-height: 1.5; font-size: 13px; border-radius: 2px;
-            min-width: 0; /* Important for grid responsiveness */
-        }
+       .auto-textarea { 
+    background: var(--bg-input); 
+    border: 1px solid transparent; 
+    color: var(--text-main); 
+    font-family: var(--font-code); 
+    padding: 8px 10px; 
+    width: 100%; 
+    resize: none; 
+    overflow: hidden;
+    line-height: 1.5; 
+    font-size: 13px; 
+    border-radius: 2px;
+    min-width: 0;
+    min-height: 38px; /* 防止瞬间塌缩 */
+    word-break: break-word; /* 确保长文本正确换行 */
+}
         .auto-textarea:focus { border-color: var(--accent-color); outline: none; }
         .inp-comment { background: transparent; border: none; color: var(--sh-comment); font-size: 11px; font-style: italic; width: 100%; font-family: var(--font-code); margin-top: 4px; }
         .cmd-info { font-size: 11px; color: #aaa; background: rgba(255,255,255,0.05); padding: 4px 8px; border-radius: 2px; margin-top: 4px; border-left: 2px solid var(--accent-color); display: none; }
@@ -728,7 +738,16 @@ function updatePreview(isMeta = false) { const item = currentSelection.item; if(
 function updateStats() { let total = 0; CATEGORIES.forEach(c => { if(c.id !== 'metadata') total += (modData[c.id]?.length || 0); }); const content = document.getElementById('statsContent'); content.innerHTML = ''; CATEGORIES.forEach(c => { if(c.id === 'metadata') return; const count = modData[c.id]?.length || 0; const percentage = total > 0 ? (count / total) * 100 : 0; content.innerHTML += `<div class="stat-box"><div style="font-size:11px; color:#888">${t(c.i18n)}</div><div style="font-size:18px; font-weight:bold">${count}</div><div class="stat-bar-outer"><div class="stat-bar-inner" style="width:${percentage}%"></div></div></div>`; }); document.getElementById('objCount').innerText = t('TXT_TOTAL') + ": " + total; }
 function toggleBottomPanel() { const p = document.getElementById('bottomPanel'); p.style.height = p.style.height === '180px' ? '0' : '180px'; if(p.style.height === '180px') updateStats(); }
 function exportFile() { let out = ""; modData.metadata.forEach(m => out += (m.cmd==='raw'? m.value : `${m.cmd} ${m.value}${m.comment?' -- '+m.comment:''}`) + "\n"); CATEGORIES.forEach(cat => { if(['metadata','god'].includes(cat.id)) return; (modData[cat.id]||[]).forEach(item => { out += `\n${item.header.cmd} ${item.header.value}${item.header.comment?' -- '+item.header.comment:''}\n`; item.commands.forEach(c => out += (c.cmd==='raw' ? c.value : `  ${c.cmd} ${c.value}${c.comment?' -- '+c.comment:''}`) + "\n"); out += "#end\n"; }); }); const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([out], {type: "text/plain"})); a.download = "mod_export.dm"; a.click(); }
-function autoResize(el) { el.style.height = 'auto'; el.style.height = el.scrollHeight + 'px'; }
+function autoResize(el) { 
+    // 强制先缩小到极小值，以获取准确的 scrollHeight
+    el.style.height = '1px'; 
+    // 加上 2px 的余量防止出现滚动条
+    el.style.height = (el.scrollHeight + 2) + 'px'; 
+}
+// 新增：刷新所有输入框高度
+function adjustAllTextareas() {
+    document.querySelectorAll('.auto-textarea').forEach(el => autoResize(el));
+}
 function copyPreview() { navigator.clipboard.writeText(document.getElementById('codePreview').innerText); }
 function loadFile(input) { const reader = new FileReader(); reader.onload = (e) => parseText(e.target.result); reader.readAsText(input.files[0]); }
 function filterItems() { const term = document.getElementById('searchInput').value.toLowerCase(); document.querySelectorAll('.entry-item').forEach(el => { el.style.display = el.innerText.toLowerCase().includes(term) ? 'flex' : 'none'; }); }
@@ -742,6 +761,41 @@ document.addEventListener('DOMContentLoaded', () => {
     loadCmdDocs();
     setTimeout(() => tour.start(), 1000); 
 });
+// 监听窗口大小改变
+window.addEventListener('resize', () => {
+    adjustAllTextareas();
+});
+
+// 修改原来的 toggleDesktopPanel 函数，在切换侧边栏后刷新高度
+// 找到原来的 toggleDesktopPanel 函数，替换为：
+function toggleDesktopPanel(panel) {
+    if (panel === 'sidebar') {
+        const el = document.getElementById('view-sidebar');
+        const icon = document.getElementById('act-icon-sidebar');
+        if (el.classList.contains('desktop-hidden')) {
+            el.classList.remove('desktop-hidden');
+            icon.classList.add('active');
+        } else {
+            el.classList.add('desktop-hidden');
+            icon.classList.remove('active');
+        }
+    } else if (panel === 'list') {
+        const el = document.getElementById('view-list');
+        const icon = document.getElementById('act-icon-list');
+        if (el.classList.contains('desktop-hidden')) {
+            el.classList.remove('desktop-hidden');
+            icon.classList.add('active');
+        } else {
+            el.classList.add('desktop-hidden');
+            icon.classList.remove('active');
+        }
+    } else if (panel === 'editor') {
+        togglePreviewPanel();
+    }
+    
+    // 核心补充：等待动画或DOM更新后，重新计算所有文本框高度
+    setTimeout(adjustAllTextareas, 150); 
+}
 </script>
 </body>
 </html>
