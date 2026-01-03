@@ -15,7 +15,7 @@
             --font-code: "JetBrains Mono", "Consolas", monospace;
             --font-ui: "Segoe UI", "Microsoft YaHei", sans-serif;
             --radius: 2px;
-            --kofi-color: #FF5E5B; /* Ko-fi Brand Color */
+            --kofi-color: #FF5E5B;
         }
 
         * { box-sizing: border-box; outline: none; -webkit-tap-highlight-color: transparent; }
@@ -29,11 +29,12 @@
         .activity-bar { width: 48px; background: var(--bg-activity); display: flex; flex-direction: column; justify-content: space-between; flex-shrink: 0; z-index: 200; }
         .activity-icon { width: 48px; height: 48px; display: flex; justify-content: center; align-items: center; cursor: pointer; opacity: 0.6; color: #fff; font-size: 20px; transition: 0.2s; border-left: 2px solid transparent; }
         .activity-icon:hover, .activity-icon:active { opacity: 1; }
+        /* Active state for desktop toggles */
         .activity-icon.active { opacity: 1; border-left-color: #fff; background: var(--bg-sidebar); }
         .lang-btn { font-size: 12px; font-weight: bold; }
 
         /* Panels */
-        .sidebar { width: 260px; background: var(--bg-sidebar); display: flex; flex-direction: column; border-right: 1px solid #111; flex-shrink: 0; }
+        .sidebar { width: 260px; background: var(--bg-sidebar); display: flex; flex-direction: column; border-right: 1px solid #111; flex-shrink: 0; transition: width 0.1s ease, transform 0.1s ease; }
         .sidebar-header { padding: 0 12px; height: 35px; display: flex; align-items: center; font-size: 11px; font-weight: bold; color: var(--text-muted); text-transform: uppercase; border-bottom: 1px solid #111; }
         
         .tree-view { overflow-y: auto; flex: 1; }
@@ -42,20 +43,18 @@
         .tree-row.selected { background: var(--bg-selection); border-left-color: var(--accent-color); color: #fff; }
         .tree-icon { width: 22px; text-align: center; margin-right: 8px; font-size: 14px; }
         
-        .list-panel { width: 300px; background: var(--bg-sidebar); border-right: 1px solid #111; display: flex; flex-direction: column; }
+        .list-panel { width: 300px; background: var(--bg-sidebar); border-right: 1px solid #111; display: flex; flex-direction: column; flex-shrink: 0; transition: width 0.1s ease; }
         .list-header { padding: 10px; background: #2d2d2d; border-bottom: 1px solid #111; display: flex; flex-direction: column; gap: 8px; }
         .search-input { width: 100%; background: var(--bg-input); border: 1px solid transparent; color: #fff; padding: 8px; font-size: 13px; border-radius: 4px; }
         .search-input:focus { border-color: var(--accent-color); }
         
         .btn-new-item { width: 100%; padding: 8px; background: var(--accent-color); color: white; border: none; cursor: pointer; font-size: 13px; font-weight: bold; border-radius: 4px; }
         
-        /* New Ko-fi Button Style */
         .btn-kofi {
             width: 100%; padding: 8px; background: var(--kofi-color); color: white; 
             border: none; cursor: pointer; font-size: 13px; font-weight: bold; border-radius: 4px;
             display: flex; align-items: center; justify-content: center; gap: 6px;
-            text-decoration: none; /* For <a> tag */
-            transition: 0.2s;
+            text-decoration: none; transition: 0.2s;
         }
         .btn-kofi:hover { background: #ff4642; box-shadow: 0 2px 8px rgba(255, 94, 91, 0.4); }
 
@@ -72,18 +71,21 @@
         .btn-icon.del:hover { color: #f44336; }
 
         /* Editor */
-        .editor-container { flex: 1; display: flex; flex-direction: column; background: var(--bg-main); overflow: hidden; position: relative; }
-        .editor-split { flex: 1; display: flex; overflow: hidden; }
-        .form-view { flex: 1; padding: 20px; overflow-y: auto; padding-bottom: 100px; }
+        /* Key Fix: min-width: 0 prevents flex child from overflowing */
+        .editor-container { flex: 1; display: flex; flex-direction: column; background: var(--bg-main); overflow: hidden; position: relative; min-width: 0; }
+        .editor-split { flex: 1; display: flex; overflow: hidden; position: relative; }
+        .form-view { flex: 1; padding: 20px; overflow-y: auto; padding-bottom: 100px; min-width: 0; }
         
-        .form-row { display: grid; grid-template-columns: 160px 1fr 70px; gap: 12px; margin-bottom: 8px; padding: 4px; border-radius: var(--radius); align-items: start; }
+        /* Layout Fix: optimized grid columns for tighter spaces */
+        .form-row { display: grid; grid-template-columns: 140px 1fr 60px; gap: 10px; margin-bottom: 8px; padding: 4px; border-radius: var(--radius); align-items: start; }
         .form-row:hover { background: #2a2d2e; }
-        .lbl { text-align: right; color: var(--sh-key); font-family: var(--font-code); padding-top: 6px; font-weight: 500; font-size: 12px; background: none; border: none; width: 100%; }
+        .lbl { text-align: right; color: var(--sh-key); font-family: var(--font-code); padding-top: 6px; font-weight: 500; font-size: 12px; background: none; border: none; width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         
         .auto-textarea { 
             background: var(--bg-input); border: 1px solid transparent; color: var(--text-main); 
             font-family: var(--font-code); padding: 8px 10px; width: 100%; resize: none; overflow: hidden;
             line-height: 1.5; font-size: 13px; border-radius: 2px;
+            min-width: 0; /* Important for grid responsiveness */
         }
         .auto-textarea:focus { border-color: var(--accent-color); outline: none; }
         .inp-comment { background: transparent; border: none; color: var(--sh-comment); font-size: 11px; font-style: italic; width: 100%; font-family: var(--font-code); margin-top: 4px; }
@@ -94,7 +96,8 @@
         .btn-action { cursor: pointer; font-size: 14px; color: #858585; padding: 2px 6px; }
         .btn-action:hover { color: #fff; background: rgba(255,255,255,0.1); border-radius: 2px; }
 
-        .preview-view { width: 420px; background: #1e1e1e; border-left: 1px solid #333; display: flex; flex-direction: column; }
+        /* Preview Panel - Fixed for medium screens */
+        .preview-view { width: 400px; background: #1e1e1e; border-left: 1px solid #333; display: flex; flex-direction: column; flex-shrink: 0; }
         .code-content { flex: 1; padding: 15px; overflow: auto; font-family: var(--font-code); font-size: 12px; white-space: pre-wrap; color: #d4d4d4; line-height: 1.6; }
         
         .tok-cmd { color: var(--sh-cmd); font-weight: bold; }
@@ -108,7 +111,7 @@
         .stat-bar-outer { height: 4px; background: #444; margin-top: 8px; width: 100%; border-radius: 2px; overflow: hidden; }
         .stat-bar-inner { height: 100%; background: var(--accent-color); width: 0%; transition: 0.4s ease-out; }
 
-        .status-bar { height: 22px; background: var(--accent-color); color: #fff; display: flex; align-items: center; padding: 0 10px; font-size: 11px; justify-content: space-between; }
+        .status-bar { height: 22px; background: var(--accent-color); color: #fff; display: flex; align-items: center; padding: 0 10px; font-size: 11px; justify-content: space-between; flex-shrink: 0; }
         
         /* Modals & Suggestions */
         .vsc-modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); z-index: 10000; display: none; justify-content: center; align-items: flex-start; padding-top: 50px; }
@@ -132,6 +135,9 @@
         .mobile-toolbar { display: none; }
         .mobile-list-header { display: none; }
 
+        /* Utility for desktop toggling */
+        .desktop-hidden { display: none !important; }
+
         /* --- Mobile Adaptations --- */
         @media (max-width: 768px) {
             body { flex-direction: column; position: relative; }
@@ -141,7 +147,9 @@
             .activity-top { display: none; }
             .sidebar, .list-panel, .editor-container { width: 100%; height: calc(100% - 50px); position: absolute; top: 0; left: 0; background: var(--bg-main); z-index: 10; display: none; border-right: none; }
             .sidebar { z-index: 30; } .list-panel { z-index: 20; } .editor-container { z-index: 15; }
+            /* Mobile View Switching Logic */
             .view-active { display: flex !important; }
+            
             .entry-item { padding: 15px; } .entry-actions { opacity: 1; } .btn-icon { padding: 8px; font-size: 16px; }
             .mobile-list-header { display: flex; justify-content: space-between; margin-bottom: 5px; }
             .form-view { padding: 10px; padding-bottom: 80px; }
@@ -156,6 +164,9 @@
             .mobile-toolbar { height: 45px; background: #2d2d2d; border-bottom: 1px solid #444; display: flex; align-items: center; justify-content: space-between; padding: 0 15px; flex-shrink: 0; }
             .mobile-back-btn { color: #fff; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 5px; }
             .status-bar { display: none; }
+            
+            /* Reset utility styles for mobile */
+            .desktop-hidden { display: flex !important; }
         }
 
         /* Tour Guide */
@@ -164,60 +175,15 @@
         .tour-highlight { position: relative; z-index: 40001 !important; box-shadow: 0 0 0 9999px rgba(0,0,0,0.7); pointer-events: none; }
         #tour-title { margin-top:0; color:var(--accent-color); font-size:14px; font-weight:bold; }
         #tour-desc { color:#cccccc; font-size:13px; line-height:1.5; margin:10px 0; }
-@media (min-width: 769px) and (max-width: 1200px) {
-    :root {
-        /* 稍微减小 UI 字体以节省空间 */
-        font-size: 12px;
-    }
 
-    /* 1. 缩小侧边栏和列表宽度 */
-    .sidebar { width: 200px; }
-    .list-panel { width: 240px; }
-
-    /* 2. 让预览面板像移动端一样可以弹出，而不是挤占空间 */
-    .preview-view {
-        position: absolute;
-        right: 0;
-        top: 0;
-        bottom: 0;
-        width: 400px;
-        z-index: 150;
-        display: none; /* 默认隐藏 */
-        box-shadow: -5px 0 20px rgba(0,0,0,0.5);
-        border-left: 1px solid var(--border-color);
-    }
-    
-    .preview-view.active {
-        display: flex;
-    }
-
-    .mobile-toolbar {
-        display: flex !important; 
-        height: 35px;
-        background: var(--bg-sidebar);
-        border-bottom: 1px solid #111;
-    }
-
-    .mobile-back-btn {
-        display: none !important;
-    }
-
-    .form-row {
-        grid-template-columns: 120px 1fr 60px; /* 缩短标签宽度 */
-        gap: 8px;
-    }
-
-    .form-view {
-        padding: 15px;
-    }
-}
-.form-row {
-    min-width: 0; /* 防止 grid 容器溢出 */
-}
-
-.auto-textarea {
-    min-width: 0;
-}
+        /* Media Queries for Desktop Space Saving */
+        @media (min-width: 769px) and (max-width: 1366px) {
+             /* Compact sidebar for laptops */
+             .sidebar { width: 220px; }
+             .list-panel { width: 250px; }
+             .preview-view { width: 350px; }
+             /* Allow preview to be hidden if user wants, though we use the toggle button now */
+        }
     </style>
 </head>
 <body onclick="hideSuggestions()">
@@ -250,9 +216,11 @@
     <div class="activity-bar">
         <div class="activity-top" style="display:none"></div>
         <div class="activity-bottom">
-            <div class="activity-icon" onclick="switchView('sidebar')" title="分类"><i class="fa-solid fa-list-ul"></i></div>
-            <div class="activity-icon" onclick="switchView('list')" title="列表"><i class="fa-solid fa-file-lines"></i></div>
-            <div class="activity-icon active" onclick="switchView('editor')" title="编辑"><i class="fa-solid fa-pen-to-square"></i></div>
+            <!-- Modified OnClick to handle Desktop Toggling -->
+            <div class="activity-icon active" id="act-icon-sidebar" onclick="handleNavClick('sidebar')" title="分类"><i class="fa-solid fa-list-ul"></i></div>
+            <div class="activity-icon active" id="act-icon-list" onclick="handleNavClick('list')" title="列表"><i class="fa-solid fa-file-lines"></i></div>
+            <!-- The Editor icon is mostly for mobile switching or desktop 'focus' -->
+            <div class="activity-icon" id="act-icon-editor" onclick="handleNavClick('editor')" title="编辑/预览"><i class="fa-solid fa-pen-to-square"></i></div>
             
             <!-- Tools -->
             <div class="activity-icon lang-btn" onclick="toggleLanguage()">中/En</div>
@@ -266,7 +234,6 @@
         <div class="sidebar-header" data-i18n="HDR_EXPLORER">资源分类</div>
         <div class="tree-view" id="mainTree"></div>
         
-        <!-- Modified Footer with Ko-fi Button -->
         <div style="padding: 10px; border-top: 1px solid #333; display:flex; flex-direction: column; gap: 8px;">
             <a href="https://ko-fi.com/pldada" target="_blank" class="btn-kofi">
                 <i class="fa-solid fa-mug-hot"></i> <span data-i18n="BTN_KOFI">Ko-fi 赞助</span>
@@ -283,7 +250,7 @@
         <div class="list-header">
             <div class="mobile-list-header">
                 <span style="font-weight:bold; color:#fff" id="listTitle">列表</span>
-                <i class="fa-solid fa-arrow-left" style="padding:5px; cursor:pointer" onclick="switchView('sidebar')"><span data-i18n="BTN_BACK_CAT"> 返回分类</span></i>
+                <i class="fa-solid fa-arrow-left" style="padding:5px; cursor:pointer" onclick="handleNavClick('sidebar')"><span data-i18n="BTN_BACK_CAT"> 返回分类</span></i>
             </div>
             <button class="btn-new-item" onclick="createNewItem()"><i class="fa-solid fa-plus"></i> <span data-i18n="BTN_NEW_ITEM">新增项目</span></button>
             <input type="text" class="search-input" id="searchInput" placeholder="Search..." onkeyup="filterItems()">
@@ -291,12 +258,11 @@
         <div class="entry-list" id="entryList"></div>
     </div>
 
-    <div class="editor-container" id="view-editor">
+    <div class="editor-container view-active" id="view-editor">
         <div class="mobile-toolbar" id="mobileToolbar">
-            <div class="mobile-back-btn" onclick="switchView('list')"><i class="fa-solid fa-chevron-left"></i> <span data-i18n="BTN_BACK_LIST">列表</span></div>
+            <div class="mobile-back-btn" onclick="handleNavClick('list')"><i class="fa-solid fa-chevron-left"></i> <span data-i18n="BTN_BACK_LIST">列表</span></div>
             <div style="    padding: 10px;display: flex; gap: 15px;align-items: center;;">
                 <i class="fa-solid fa-eye" onclick="togglePreview()" style="color:#ccc; cursor:pointer"></i>
-                <!--  <i class="fa-solid fa-save" style="color:#007acc; cursor:pointer"></i> -->
             </div>
         </div>
 
@@ -309,8 +275,11 @@
             </div>
             <div class="preview-view" id="previewPanel">
                 <div style="padding:12px; font-size:12px; color:var(--text-muted); background:#252526; border-bottom:1px solid #333; display:flex; justify-content:space-between; align-items:center;">
-                    <span><i class="fa-solid fa-arrow-left" onclick="togglePreview()" style="margin-right:10px;"></i><span data-i18n="HDR_PREVIEW">代码预览</span></span>
-                    <i class="fa-regular fa-copy" style="cursor:pointer; padding:5px;" onclick="copyPreview()"></i>
+                    <span><span data-i18n="HDR_PREVIEW">代码预览</span></span>
+                    <div style="display:flex; gap:10px">
+                        <i class="fa-regular fa-copy" style="cursor:pointer; padding:5px;" onclick="copyPreview()" title="复制"></i>
+                        <i class="fa-solid fa-xmark" style="cursor:pointer; padding:5px;" onclick="togglePreviewPanel()" title="Hide"></i>
+                    </div>
                 </div>
                 <div class="code-content" id="codePreview"></div>
             </div>
@@ -387,7 +356,7 @@ const I18N = {
     
     // Tour
     "TOUR_1_T": { cn: "多功能侧边栏", en: "Sidebar / Nav" },
-    "TOUR_1_D": { cn: "在这里切换不同的编辑视图，或打开底部的统计图表面板。", en: "Switch views or open stats." },
+    "TOUR_1_D": { cn: "点击左侧图标可切换或折叠侧边栏，获取更多编辑空间。", en: "Click icons to toggle sidebar panels." },
     "TOUR_2_T": { cn: "对象分类", en: "Categories" },
     "TOUR_2_D": { cn: "选择 Mod 的不同类别。", en: "Select mod object types." },
     "TOUR_3_T": { cn: "条目列表", en: "Item List" },
@@ -427,25 +396,82 @@ function updateInterfaceText() {
     updateStats();
 }
 
-// --- Mobile Logic ---
-function switchView(viewName) {
+// --- Navigation Logic (Mobile vs Desktop) ---
+
+function handleNavClick(viewName) {
+    // 手机端：切换视图
+    if (window.innerWidth <= 768) {
+        switchViewMobile(viewName);
+    } 
+    // 桌面端：折叠/展开面板
+    else {
+        toggleDesktopPanel(viewName);
+    }
+}
+
+function switchViewMobile(viewName) {
     document.getElementById('view-sidebar').classList.remove('view-active');
     document.getElementById('view-list').classList.remove('view-active');
     document.getElementById('view-editor').classList.remove('view-active');
     document.getElementById('view-' + viewName).classList.add('view-active');
+    
+    // Update Icons
     document.querySelectorAll('.activity-bottom .activity-icon').forEach(el => el.classList.remove('active'));
-    if(viewName==='sidebar') document.querySelector('.activity-bottom .activity-icon:nth-child(1)').classList.add('active');
-    if(viewName==='list') document.querySelector('.activity-bottom .activity-icon:nth-child(2)').classList.add('active');
-    if(viewName==='editor') document.querySelector('.activity-bottom .activity-icon:nth-child(3)').classList.add('active');
+    if(viewName==='sidebar') document.getElementById('act-icon-sidebar').classList.add('active');
+    if(viewName==='list') document.getElementById('act-icon-list').classList.add('active');
+    if(viewName==='editor') document.getElementById('act-icon-editor').classList.add('active');
 }
 
+function toggleDesktopPanel(panel) {
+    if (panel === 'sidebar') {
+        const el = document.getElementById('view-sidebar');
+        const icon = document.getElementById('act-icon-sidebar');
+        if (el.classList.contains('desktop-hidden')) {
+            el.classList.remove('desktop-hidden');
+            icon.classList.add('active');
+        } else {
+            el.classList.add('desktop-hidden');
+            icon.classList.remove('active');
+        }
+    } else if (panel === 'list') {
+        const el = document.getElementById('view-list');
+        const icon = document.getElementById('act-icon-list');
+        if (el.classList.contains('desktop-hidden')) {
+            el.classList.remove('desktop-hidden');
+            icon.classList.add('active');
+        } else {
+            el.classList.add('desktop-hidden');
+            icon.classList.remove('active');
+        }
+    } else if (panel === 'editor') {
+        // Desktop click on editor icon basically toggles preview panel for more space
+        togglePreviewPanel();
+    }
+}
+
+function togglePreviewPanel() {
+    const p = document.getElementById('previewPanel');
+    const icon = document.getElementById('act-icon-editor');
+    if (p.style.display === 'none') {
+        p.style.display = 'flex';
+        // icon.classList.add('active');
+    } else {
+        p.style.display = 'none';
+        // icon.classList.remove('active');
+    }
+}
+
+// Mobile specific preview toggle
 function togglePreview() {
     const p = document.getElementById('previewPanel');
     p.classList.toggle('active');
 }
 
+// Initialize Logic
 if (window.innerWidth <= 768) {
-    switchView('sidebar'); 
+    switchViewMobile('sidebar'); 
+} else {
+    // Desktop Defaults: Sidebar and List are active
 }
 
 // --- State & Config ---
@@ -482,7 +508,7 @@ async function loadCmdDocs() {
 class TourGuide {
     constructor() {
         this.currentStep = 0;
-        this.storageKey = 'tour-finished-v1.6.1'; 
+        this.storageKey = 'tour-finished-v1.6.3'; 
         this.steps = [
             { target: 'step-1', t_title: 'TOUR_1_T', t_desc: 'TOUR_1_D' },
             { target: 'step-2', t_title: 'TOUR_2_T', t_desc: 'TOUR_2_D' },
@@ -498,8 +524,20 @@ class TourGuide {
         this.show();
     }
     show() {
+        // Simple positioning logic for tour
         const step = this.steps[this.currentStep];
-        const el = document.getElementById(step.target);
+        let el = null;
+        
+        // Map abstract steps to real IDs based on current view
+        if(this.currentStep === 0) el = document.querySelector('.activity-bar');
+        if(this.currentStep === 1) el = document.getElementById('view-sidebar');
+        if(this.currentStep === 2) el = document.getElementById('view-list');
+        if(this.currentStep === 3) el = document.getElementById('previewPanel');
+        if(this.currentStep === 4) el = document.querySelector('.sidebar footer') || document.getElementById('view-sidebar');
+
+        // Force elements visible for tour if hidden on desktop
+        if(el && el.classList.contains('desktop-hidden')) el.classList.remove('desktop-hidden');
+
         const tooltip = document.getElementById('tour-tooltip');
         
         document.querySelectorAll('.tour-highlight').forEach(e => e.classList.remove('tour-highlight'));
@@ -513,12 +551,18 @@ class TourGuide {
         let top = rect.bottom + 10;
         let left = 20;
         
+        // Adjust tour position
         if (window.innerWidth <= 768) {
             top = 100; left = (window.innerWidth - 280) / 2; 
         } else {
-             if (left + 300 > window.innerWidth) left = rect.left - 300;
-             if (top + 200 > window.innerHeight) top = window.innerHeight - 200;
+             if (rect.right + 300 < window.innerWidth) left = rect.right + 20;
+             else left = rect.left - 300;
+             top = rect.top + 20;
         }
+        
+        // Boundary check
+        if(left < 0) left = 10;
+        if(top > window.innerHeight - 150) top = window.innerHeight - 200;
 
         tooltip.style.top = top + 'px';
         tooltip.style.left = left + 'px';
@@ -632,7 +676,12 @@ function renderTree() {
         div.innerHTML = `<span class="tree-icon"><i class="fa-solid ${cat.icon}"></i></span><span>${t(cat.i18n)}</span>`;
         div.onclick = () => { 
             currentSelection.catId = cat.id; renderTree(); renderList(); 
-            if(window.innerWidth <= 768) switchView('list'); 
+            if(window.innerWidth <= 768) switchViewMobile('list'); 
+            // Desktop: Ensure lists are visible if they were hidden
+            if(window.innerWidth > 768) {
+                document.getElementById('view-list').classList.remove('desktop-hidden');
+                document.getElementById('act-icon-list').classList.add('active');
+            }
         };
         tree.appendChild(div);
     });
@@ -650,7 +699,7 @@ function renderList() {
         div.innerHTML = `<span class="entry-id">${item.id || ''}</span><span class="entry-name" title="${displayName}">${displayName}</span><div class="entry-actions"><i class="fa-solid fa-copy btn-icon" onclick="duplicateItem(event, '${currentSelection.catId}', ${idx})"></i><i class="fa-solid fa-trash-can btn-icon del" onclick="removeItem(event, '${currentSelection.catId}', ${idx})"></i></div>`;
         div.onclick = () => { 
             item.isMeta ? loadMetadata() : loadItem(item); 
-            if(window.innerWidth <= 768) switchView('editor'); 
+            if(window.innerWidth <= 768) switchViewMobile('editor'); 
         };
         list.appendChild(div);
     });
